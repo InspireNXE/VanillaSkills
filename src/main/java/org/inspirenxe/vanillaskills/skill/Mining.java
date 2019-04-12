@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.inspirenxe.vanillaskills.type;
+package org.inspirenxe.vanillaskills.skill;
 
 import static java.util.Collections.singleton;
 import static net.kyori.filter.FilterResponse.ABSTAIN;
