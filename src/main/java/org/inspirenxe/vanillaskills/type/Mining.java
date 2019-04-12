@@ -41,6 +41,7 @@ import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerF
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockCreatorFilters.natural;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.blocks;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.states;
+import static org.inspirenxe.skills.api.skill.builtin.filter.gamemode.GameModeFilters.creative;
 import static org.inspirenxe.skills.api.skill.builtin.filter.item.ItemFilters.item;
 import static org.inspirenxe.skills.api.skill.builtin.filter.level.LevelFilters.level;
 import static org.spongepowered.api.block.trait.EnumTraits.STONEBRICK_VARIANT;
@@ -82,11 +83,14 @@ public final class Mining extends BasicSkillType {
                 .register(container, EventProcessors.USER_INTERACT_ITEM,
                     registrar()
                         .cancelEvent(
-                            any(
-                                all(whenThen(singleton(item(ItemTypes.STONE_PICKAXE)), DENY, ABSTAIN), not(level(15))),
-                                all(whenThen(singleton(item(ItemTypes.IRON_PICKAXE)), DENY, ABSTAIN), not(level(30))),
-                                all(whenThen(singleton(item(ItemTypes.GOLDEN_PICKAXE)), DENY, ABSTAIN), not(level(45))),
-                                all(whenThen(singleton(item(ItemTypes.DIAMOND_PICKAXE)), DENY, ABSTAIN), not(level(60)))
+                            all(
+                                not(creative()),
+                                any(
+                                    all(whenThen(singleton(item(ItemTypes.STONE_PICKAXE)), DENY, ABSTAIN), not(level(15))),
+                                    all(whenThen(singleton(item(ItemTypes.IRON_PICKAXE)), DENY, ABSTAIN), not(level(30))),
+                                    all(whenThen(singleton(item(ItemTypes.GOLDEN_PICKAXE)), DENY, ABSTAIN), not(level(45))),
+                                    all(whenThen(singleton(item(ItemTypes.DIAMOND_PICKAXE)), DENY, ABSTAIN), not(level(60)))
+                                )
                             )
                         )
                         .build()
@@ -95,25 +99,28 @@ public final class Mining extends BasicSkillType {
             final FilterRegistrar.Builder breakBlock =
                 registrar()
                     .cancelTransaction(
-                        any(
-                            all(whenThen(singleton(blocks(BlockTypes.SANDSTONE)), DENY, ABSTAIN), not(level(10))),
-                            all(whenThen(singleton(blocks(BlockTypes.COAL_ORE)), DENY, ABSTAIN), not(level(15))),
-                            all(whenThen(singleton(blocks(BlockTypes.STONEBRICK)), DENY, ABSTAIN), not(level(15))),
-                            all(whenThen(singleton(blocks(BlockTypes.IRON_ORE)), DENY, ABSTAIN), not(level(25))),
-                            all(whenThen(singleton(blocks(BlockTypes.LAPIS_ORE)), DENY, ABSTAIN), not(level(35))),
-                            all(whenThen(singleton(blocks(BlockTypes.GOLD_ORE)), DENY, ABSTAIN), not(level(45))),
-                            all(whenThen(singleton(blocks(BlockTypes.DIAMOND_ORE)), DENY, ABSTAIN), not(level(55))),
-                            all(whenThen(singleton(blocks(BlockTypes.OBSIDIAN)), DENY, ABSTAIN), not(level(65))),
-                            all(whenThen(singleton(blocks(BlockTypes.NETHERRACK)), DENY, ABSTAIN), not(level(75))),
-                            all(whenThen(singleton(blocks(BlockTypes.END_STONE)), DENY, ABSTAIN), not(level(85))),
-                            all(whenThen(singleton(blocks(BlockTypes.EMERALD_ORE)), DENY, ABSTAIN), not(level(95))),
-                            all(whenThen(singleton(blocks(BlockTypes.REDSTONE_ORE)), DENY, ABSTAIN), not(level(99))),
-                            all(whenThen(singleton(blocks(BlockTypes.LIT_REDSTONE_ORE)), DENY, ABSTAIN), not(level(99)))
+                        all(
+                            whenThen(singleton(not(creative())), DENY, ABSTAIN),
+                            any(
+                                all(whenThen(singleton(blocks(BlockTypes.SANDSTONE)), DENY, ABSTAIN), not(level(10))),
+                                all(whenThen(singleton(blocks(BlockTypes.COAL_ORE)), DENY, ABSTAIN), not(level(15))),
+                                all(whenThen(singleton(blocks(BlockTypes.STONEBRICK)), DENY, ABSTAIN), not(level(15))),
+                                all(whenThen(singleton(blocks(BlockTypes.IRON_ORE)), DENY, ABSTAIN), not(level(25))),
+                                all(whenThen(singleton(blocks(BlockTypes.LAPIS_ORE)), DENY, ABSTAIN), not(level(35))),
+                                all(whenThen(singleton(blocks(BlockTypes.GOLD_ORE)), DENY, ABSTAIN), not(level(45))),
+                                all(whenThen(singleton(blocks(BlockTypes.DIAMOND_ORE)), DENY, ABSTAIN), not(level(55))),
+                                all(whenThen(singleton(blocks(BlockTypes.OBSIDIAN)), DENY, ABSTAIN), not(level(65))),
+                                all(whenThen(singleton(blocks(BlockTypes.NETHERRACK)), DENY, ABSTAIN), not(level(75))),
+                                all(whenThen(singleton(blocks(BlockTypes.END_STONE)), DENY, ABSTAIN), not(level(85))),
+                                all(whenThen(singleton(blocks(BlockTypes.EMERALD_ORE)), DENY, ABSTAIN), not(level(95))),
+                                all(whenThen(singleton(blocks(BlockTypes.REDSTONE_ORE)), DENY, ABSTAIN), not(level(99))),
+                                all(whenThen(singleton(blocks(BlockTypes.LIT_REDSTONE_ORE)), DENY, ABSTAIN), not(level(99)))
+                            )
                         )
                     )
                     .transactionTrigger(
                         triggerIf()
-                            .all(blocks(), natural())
+                            .all(not(creative()), blocks(), natural())
                             .then(
                                 applyIf().any(blocks(BlockTypes.STONE)).then(xp(5)).build(),
                                 applyIf().any(blocks(BlockTypes.NETHERRACK)).then(xp(2.5)).build(),
@@ -141,7 +148,7 @@ public final class Mining extends BasicSkillType {
                 breakBlock
                     .transactionTrigger(
                         triggerIf()
-                            .all(blocks(), natural())
+                            .all(not(creative()), blocks(), natural())
                             .then(
                                 applyIf().any(blocks(BlockTypes.STONE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 1)).build(),
                                 applyIf().any(blocks(BlockTypes.NETHERRACK)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 0.9)).build(),
