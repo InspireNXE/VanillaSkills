@@ -2,12 +2,12 @@
 <droplet spec="1.0.0">
   <effect shape="star">
     <colors>
-      <color>skills:brown</color>
-      <color>skills:gold</color>
+      <color>vanilla_skills:brown</color>
+      <color>vanilla_skills:gold</color>
     </colors>
     <fade-colors>
-      <color>skills:brown</color>
-      <color>skills:gold</color>
+      <color>vanilla_skills:brown</color>
+      <color>vanilla_skills:gold</color>
     </fade-colors>
     <flickers>false</flickers>
     <trails>false</trails>

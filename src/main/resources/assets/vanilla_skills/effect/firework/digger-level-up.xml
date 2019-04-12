@@ -2,11 +2,11 @@
 <droplet spec="1.0.0">
   <effect shape="star">
     <colors>
-      <color>skills:brown</color>
+      <color>vanilla_skills:brown</color>
       <color>minecraft:green</color>
     </colors>
     <fade-colors>
-      <color>skills:brown</color>
+      <color>vanilla_skills:brown</color>
       <color>minecraft:green</color>
     </fade-colors>
     <flickers>false</flickers>

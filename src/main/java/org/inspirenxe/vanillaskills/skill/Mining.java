@@ -24,13 +24,13 @@
  */
 package org.inspirenxe.vanillaskills.skill;
 
-import static java.util.Collections.singleton;
-import static net.kyori.filter.FilterResponse.ABSTAIN;
+
 import static net.kyori.filter.FilterResponse.ALLOW;
 import static net.kyori.filter.FilterResponse.DENY;
-import static net.kyori.filter.Filters.all;
 import static net.kyori.filter.Filters.any;
 import static net.kyori.filter.Filters.not;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_CHANGE_BLOCK_BREAK;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM;
 import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.EconomyApplicators.scaledMoney;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
@@ -54,7 +54,6 @@ import org.inspirenxe.skills.api.function.economy.EconomyFunctionType;
 import org.inspirenxe.skills.api.function.level.LevelFunctionType;
 import org.inspirenxe.skills.api.skill.Skill;
 import org.inspirenxe.skills.api.skill.builtin.BasicSkillType;
-import org.inspirenxe.skills.api.skill.builtin.EventProcessors;
 import org.inspirenxe.skills.api.skill.builtin.FilterRegistrar;
 import org.inspirenxe.skills.api.skill.holder.SkillHolderContainer;
 import org.spongepowered.api.Sponge;
@@ -62,6 +61,7 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.Text;
 
@@ -83,7 +83,7 @@ public final class Mining extends BasicSkillType {
         //@formatter:off
         containers.forEach(container -> {
             this
-                .register(container, EventProcessors.USER_INTERACT_ITEM,
+                .register(container, USER_INTERACT_ITEM,
                     registrar()
                         .cancelEvent(
                             matchTo(
@@ -154,34 +154,36 @@ public final class Mining extends BasicSkillType {
 
 
             if (es != null && ef != null) {
+                final Currency c = es.getDefaultCurrency();
+                
                 breakBlock
                     .transactionTrigger(
                         triggerIf()
                             .all(not(creative()), blocks(), natural())
                             .then(
-                                applyIf().any(blocks(BlockTypes.STONE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 1)).build(),
-                                applyIf().any(blocks(BlockTypes.NETHERRACK)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 0.9)).build(),
-                                applyIf().any(blocks(BlockTypes.SANDSTONE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 2)).build(),
-                                applyIf().any(blocks(BlockTypes.COAL_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 3)).build(),
-                                applyIf().any(blocks(BlockTypes.IRON_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 4)).build(),
-                                applyIf().any(blocks(BlockTypes.LAPIS_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 5)).build(),
-                                applyIf().any(blocks(BlockTypes.GOLD_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 6)).build(),
-                                applyIf().any(blocks(BlockTypes.REDSTONE_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 7)).build(),
-                                applyIf().any(blocks(BlockTypes.LIT_REDSTONE_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 7)).build(),
-                                applyIf().any(blocks(BlockTypes.DIAMOND_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 8)).build(),
-                                applyIf().any(blocks(BlockTypes.END_STONE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 1)).build(),
-                                applyIf().any(blocks(BlockTypes.OBSIDIAN)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 8)).build(),
-                                applyIf().any(blocks(BlockTypes.EMERALD_ORE)).then(scaledMoney(es, ef, es.getDefaultCurrency(), 10)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "stonebrick")))).then(scaledMoney(es, ef, es.getDefaultCurrency(), 4)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "mossy_stonebrick")))).then(scaledMoney(es, ef, es.getDefaultCurrency(), 5)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick")))).then(scaledMoney(es, ef, es.getDefaultCurrency(), 5)).build()
+                                applyIf().any(blocks(BlockTypes.STONE)).then(scaledMoney(es, ef, c, 1)).build(),
+                                applyIf().any(blocks(BlockTypes.NETHERRACK)).then(scaledMoney(es, ef, c, 0.9)).build(),
+                                applyIf().any(blocks(BlockTypes.SANDSTONE)).then(scaledMoney(es, ef, c, 2)).build(),
+                                applyIf().any(blocks(BlockTypes.COAL_ORE)).then(scaledMoney(es, ef, c, 3)).build(),
+                                applyIf().any(blocks(BlockTypes.IRON_ORE)).then(scaledMoney(es, ef, c, 4)).build(),
+                                applyIf().any(blocks(BlockTypes.LAPIS_ORE)).then(scaledMoney(es, ef, c, 5)).build(),
+                                applyIf().any(blocks(BlockTypes.GOLD_ORE)).then(scaledMoney(es, ef, c, 6)).build(),
+                                applyIf().any(blocks(BlockTypes.REDSTONE_ORE)).then(scaledMoney(es, ef, c, 7)).build(),
+                                applyIf().any(blocks(BlockTypes.LIT_REDSTONE_ORE)).then(scaledMoney(es, ef, c, 7)).build(),
+                                applyIf().any(blocks(BlockTypes.DIAMOND_ORE)).then(scaledMoney(es, ef, c, 8)).build(),
+                                applyIf().any(blocks(BlockTypes.END_STONE)).then(scaledMoney(es, ef, c, 1)).build(),
+                                applyIf().any(blocks(BlockTypes.OBSIDIAN)).then(scaledMoney(es, ef, c, 8)).build(),
+                                applyIf().any(blocks(BlockTypes.EMERALD_ORE)).then(scaledMoney(es, ef, c, 10)).build(),
+                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "stonebrick")))).then(scaledMoney(es, ef, c, 4)).build(),
+                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "mossy_stonebrick")))).then(scaledMoney(es, ef, c, 5)).build(),
+                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick")))).then(scaledMoney(es, ef, c, 5)).build()
                             )
-                            .elseApply(scaledMoney(es, ef, es.getDefaultCurrency(), 0.1))
+                            .elseApply(scaledMoney(es, ef, c, 0.1))
                             .build()
                     );
             }
 
-            this.register(container, EventProcessors.USER_CHANGE_BLOCK_BREAK, breakBlock.build());
+            this.register(container, USER_CHANGE_BLOCK_BREAK, breakBlock.build());
         });
         //@formatter:on
     }
