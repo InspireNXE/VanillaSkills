@@ -84,7 +84,7 @@ public final class Mining extends BasicSkillType {
                     registrar()
                         .cancelEvent(
                             all(
-                                not(creative()),
+                                whenThen(singleton(not(creative())), DENY, ABSTAIN),
                                 any(
                                     all(whenThen(singleton(item(ItemTypes.STONE_PICKAXE)), DENY, ABSTAIN), not(level(15))),
                                     all(whenThen(singleton(item(ItemTypes.IRON_PICKAXE)), DENY, ABSTAIN), not(level(30))),
