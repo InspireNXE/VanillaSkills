@@ -1,0 +1,122 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.9.0'
+    id 'net.minecrell.licenser' version '0.4.1'
+    id 'maven'
+    id 'signing'
+}
+
+group = project.group
+version = project.version
+description = project.description
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+archivesBaseName = project.name.toLowerCase()
+
+defaultTasks 'clean', 'updateLicenses', 'build'
+
+sponge {
+    plugin {
+        id = 'vanilla_skills'
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'oss-sonatype-public'
+        url = 'https://oss.sonatype.org/content/repositories/public/'
+    }
+    maven {
+        name = 'sponge'
+        url = 'http://repo.spongepowered.org/maven'
+    }
+}
+
+dependencies {
+    compile "org.inspirenxe:skills:${project.skillsVersion}"
+    compile "org.spongepowered:spongeapi:${project.spongeAPIVersion}"
+    compile "net.kyori:filter:${project.filterVersion}"    
+}
+
+license {
+    header project.file('header.txt')
+    include '**/*.java'
+    exclude 'src/main/generated/**'
+    newLine false
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:all', '-Xlint:-path', '-parameters']
+    options.deprecation = true
+    options.encoding = 'UTF-8'
+}
+
+if (JavaVersion.current().isJava8Compatible() || JavaVersion.current().isJava9Compatible()) {
+    tasks.withType(Javadoc) {
+        // disable the crazy super-strict doclint tool in Java 8
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+signing {
+    required {!project.version.endsWith('-SNAPSHOT') && gradle.taskGraph.hasTask(':uploadArchives')}
+    sign configurations.archives
+}
+
+if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment {MavenDeployment deployment -> signing.signPom(deployment)}
+
+                repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+
+                snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+
+                pom.project {
+                    description 'Shared code useful for anyone working with the Sponge ecosystem'
+                    name project.name
+                    url 'https://github.com/InspireNXE/VanillaSkills/'
+
+                    developers {
+                        developer {
+                            name 'zidane'
+                        }
+                    }
+
+                    issueManagement {
+                        system 'GitHub Issues'
+                        url 'https://github.com/InspireNXE/VanillaSkills/issues'
+                    }
+
+                    licenses {
+                        license {
+                            name 'MIT License'
+                            url 'https://opensource.org/licenses/MIT'
+                        }
+                    }
+
+                    scm {
+                        connection 'scm:git@github.com:InspireNXE/VanillaSkills.git'
+                        developerConnection 'scm:git@github.com:InspireNXE/VanillaSkills.git'
+                        url 'https://github.com/InspireNXE/VanillaSkills/'
+                    }
+                }
+            }
+        }
+    }
+}
