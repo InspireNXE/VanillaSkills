@@ -26,6 +26,7 @@ package org.inspirenxe.vanillaskills.skill;
 
 import static java.util.Collections.singleton;
 import static net.kyori.filter.FilterResponse.ABSTAIN;
+import static net.kyori.filter.FilterResponse.ALLOW;
 import static net.kyori.filter.FilterResponse.DENY;
 import static net.kyori.filter.Filters.all;
 import static net.kyori.filter.Filters.any;
@@ -35,6 +36,8 @@ import static org.inspirenxe.skills.api.skill.builtin.applicator.EconomyApplicat
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
 import static org.inspirenxe.skills.api.skill.builtin.block.TraitValue.trait;
+import static org.inspirenxe.skills.api.skill.builtin.filter.Filters.filters;
+import static org.inspirenxe.skills.api.skill.builtin.filter.MatchResponseToFilter.matchTo;
 import static org.inspirenxe.skills.api.skill.builtin.filter.RedirectResponseFilter.whenThen;
 import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.applyIf;
 import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
@@ -75,7 +78,7 @@ public final class Mining extends BasicSkillType {
     @Override
     public void onConfigure(final Collection<SkillHolderContainer> containers) {
         final EconomyService es = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
-        final EconomyFunctionType ef = Sponge.getRegistry().getType(EconomyFunctionType.class, "skills:standard").orElse(null);
+        final EconomyFunctionType ef = Sponge.getRegistry().getType(EconomyFunctionType.class, "vanilla_skills:standard").orElse(null);
 
         //@formatter:off
         containers.forEach(container -> {
@@ -83,14 +86,17 @@ public final class Mining extends BasicSkillType {
                 .register(container, EventProcessors.USER_INTERACT_ITEM,
                     registrar()
                         .cancelEvent(
-                            all(
-                                whenThen(singleton(not(creative())), DENY, ABSTAIN),
-                                any(
-                                    all(whenThen(singleton(item(ItemTypes.STONE_PICKAXE)), DENY, ABSTAIN), not(level(15))),
-                                    all(whenThen(singleton(item(ItemTypes.IRON_PICKAXE)), DENY, ABSTAIN), not(level(30))),
-                                    all(whenThen(singleton(item(ItemTypes.GOLDEN_PICKAXE)), DENY, ABSTAIN), not(level(45))),
-                                    all(whenThen(singleton(item(ItemTypes.DIAMOND_PICKAXE)), DENY, ABSTAIN), not(level(60)))
-                                )
+                            matchTo(
+                                filters(
+                                    creative(),
+                                    any(
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.STONE_PICKAXE)), ALLOW, DENY), level(15)), DENY),
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.IRON_PICKAXE)), ALLOW, DENY), level(30)), DENY),
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.GOLDEN_PICKAXE)), ALLOW, DENY), level(45)), DENY),
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.DIAMOND_PICKAXE)), ALLOW, DENY), level(60)), DENY)
+                                    )
+                                ),
+                                DENY
                             )
                         )
                         .build()
@@ -99,23 +105,26 @@ public final class Mining extends BasicSkillType {
             final FilterRegistrar.Builder breakBlock =
                 registrar()
                     .cancelTransaction(
-                        all(
-                            whenThen(singleton(not(creative())), DENY, ABSTAIN),
-                            any(
-                                all(whenThen(singleton(blocks(BlockTypes.SANDSTONE)), DENY, ABSTAIN), not(level(10))),
-                                all(whenThen(singleton(blocks(BlockTypes.COAL_ORE)), DENY, ABSTAIN), not(level(15))),
-                                all(whenThen(singleton(blocks(BlockTypes.STONEBRICK)), DENY, ABSTAIN), not(level(15))),
-                                all(whenThen(singleton(blocks(BlockTypes.IRON_ORE)), DENY, ABSTAIN), not(level(25))),
-                                all(whenThen(singleton(blocks(BlockTypes.LAPIS_ORE)), DENY, ABSTAIN), not(level(35))),
-                                all(whenThen(singleton(blocks(BlockTypes.GOLD_ORE)), DENY, ABSTAIN), not(level(45))),
-                                all(whenThen(singleton(blocks(BlockTypes.DIAMOND_ORE)), DENY, ABSTAIN), not(level(55))),
-                                all(whenThen(singleton(blocks(BlockTypes.OBSIDIAN)), DENY, ABSTAIN), not(level(65))),
-                                all(whenThen(singleton(blocks(BlockTypes.NETHERRACK)), DENY, ABSTAIN), not(level(75))),
-                                all(whenThen(singleton(blocks(BlockTypes.END_STONE)), DENY, ABSTAIN), not(level(85))),
-                                all(whenThen(singleton(blocks(BlockTypes.EMERALD_ORE)), DENY, ABSTAIN), not(level(95))),
-                                all(whenThen(singleton(blocks(BlockTypes.REDSTONE_ORE)), DENY, ABSTAIN), not(level(99))),
-                                all(whenThen(singleton(blocks(BlockTypes.LIT_REDSTONE_ORE)), DENY, ABSTAIN), not(level(99)))
-                            )
+                        matchTo(
+                            filters(
+                                creative(),
+                                any(
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.SANDSTONE)), ALLOW, DENY), level(10)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.COAL_ORE)), ALLOW, DENY), level(15)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.STONEBRICK)), ALLOW, DENY), level(15)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.IRON_ORE)), ALLOW, DENY), level(25)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.LAPIS_ORE)), ALLOW, DENY), level(35)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.GOLD_ORE)), ALLOW, DENY), level(45)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.DIAMOND_ORE)), ALLOW, DENY), level(55)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.OBSIDIAN)), ALLOW, DENY), level(60)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.NETHERRACK)), ALLOW, DENY), level(75)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.END_STONE)), ALLOW, DENY), level(85)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.EMERALD_ORE)), ALLOW, DENY), level(95)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.LIT_REDSTONE_ORE)), ALLOW, DENY), level(99)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.REDSTONE_ORE)), ALLOW, DENY), level(99)), DENY)
+                                )
+                            ),
+                            DENY
                         )
                     )
                     .transactionTrigger(

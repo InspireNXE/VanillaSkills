@@ -71,7 +71,7 @@ public final class VanillaSkills extends SkillsPlugin {
     @Listener
     public void onRegisterSkills(final GameRegistryEvent.Register<SkillType> event) {
         this.registry.getType(LevelFunctionType.class, VanillaSkills.ID + ":rs-normal").ifPresent(levelFunction -> {
-            event.register(new Mining(this.container, VanillaSkills.ID +":mining", "Mining", Text.of(TextColors.AQUA, "Mining"), levelFunction, 99));
+            event.register(new Mining(this.container, "mining", "Mining", Text.of(TextColors.AQUA, "Mining"), levelFunction, 99));
         });
     }
 }
