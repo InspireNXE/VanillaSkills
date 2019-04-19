@@ -30,7 +30,14 @@ import static net.kyori.filter.FilterResponse.DENY;
 import static net.kyori.filter.Filters.any;
 import static net.kyori.filter.Filters.not;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_CHANGE_BLOCK_BREAK;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_SECONDARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_SECONDARY_OFF_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.EconomyApplicators.scaledMoney;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
@@ -44,7 +51,7 @@ import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerF
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockCreatorFilters.natural;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.blocks;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.states;
-import static org.inspirenxe.skills.api.skill.builtin.filter.gamemode.GameModeFilters.creative;
+import static org.inspirenxe.skills.api.skill.builtin.filter.data.ValueFilters.value;
 import static org.inspirenxe.skills.api.skill.builtin.filter.item.ItemFilters.item;
 import static org.inspirenxe.skills.api.skill.builtin.filter.level.LevelFilters.level;
 import static org.spongepowered.api.block.trait.EnumTraits.STONEBRICK_VARIANT;
@@ -52,27 +59,32 @@ import static org.spongepowered.api.block.trait.EnumTraits.STONEBRICK_VARIANT;
 import org.inspirenxe.skills.api.effect.firework.FireworkEffectType;
 import org.inspirenxe.skills.api.function.economy.EconomyFunctionType;
 import org.inspirenxe.skills.api.function.level.LevelFunctionType;
-import org.inspirenxe.skills.api.skill.Skill;
 import org.inspirenxe.skills.api.skill.builtin.BasicSkillType;
 import org.inspirenxe.skills.api.skill.builtin.FilterRegistrar;
 import org.inspirenxe.skills.api.skill.holder.SkillHolderContainer;
+import org.inspirenxe.vanillaskills.VanillaSkills;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Collection;
 import java.util.Optional;
 
 public final class Mining extends BasicSkillType {
 
-    public Mining(final PluginContainer container, final String id, final String name, final Text formattedName,
-        final LevelFunctionType levelFunction, final int maxLevel) {
-        super(container, id, name, formattedName, levelFunction, maxLevel);
+    private final FireworkEffectType levelUpFirework;
+
+    public Mining(final PluginContainer container, final LevelFunctionType levelFunction, final int maxLevel) {
+        super(container, "mining", "Mining", Text.of(TextColors.AQUA, "Mining"), levelFunction, maxLevel);
+
+        this.levelUpFirework = Sponge.getRegistry().getType(FireworkEffectType.class, VanillaSkills.ID + ":mining-level-up").orElse(null);
     }
 
     @Override
@@ -83,23 +95,32 @@ public final class Mining extends BasicSkillType {
         //@formatter:off
         containers.forEach(container -> {
             this
-                .register(container, USER_INTERACT_ITEM,
+                .register(container,
                     registrar()
                         .cancelEvent(
                             matchTo(
                                 filters(
-                                    creative(),
+                                    value(Keys.GAME_MODE, GameModes.CREATIVE),
                                     any(
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.STONE_PICKAXE)), ALLOW, DENY), level(15)), DENY),
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.WOODEN_PICKAXE)), ALLOW, DENY), level(10)), DENY),
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.STONE_PICKAXE)), ALLOW, DENY), level(20)), DENY),
                                         matchTo(filters(whenThen(filters(item(ItemTypes.IRON_PICKAXE)), ALLOW, DENY), level(30)), DENY),
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.GOLDEN_PICKAXE)), ALLOW, DENY), level(45)), DENY),
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.DIAMOND_PICKAXE)), ALLOW, DENY), level(60)), DENY)
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.GOLDEN_PICKAXE)), ALLOW, DENY), level(40)), DENY),
+                                        matchTo(filters(whenThen(filters(item(ItemTypes.DIAMOND_PICKAXE)), ALLOW, DENY), level(50)), DENY)
                                     )
                                 ),
                                 DENY
                             )
                         )
-                        .build()
+                        .build(),
+                    USER_INTERACT_BLOCK_PRIMARY_MAIN_HAND,
+                    USER_INTERACT_BLOCK_PRIMARY_OFF_HAND,
+                    USER_INTERACT_BLOCK_SECONDARY_MAIN_HAND,
+                    USER_INTERACT_BLOCK_SECONDARY_OFF_HAND,
+                    USER_INTERACT_ITEM_PRIMARY_MAIN_HAND,
+                    USER_INTERACT_ITEM_PRIMARY_OFF_HAND,
+                    USER_INTERACT_ITEM_SECONDARY_MAIN_HAND,
+                    USER_INTERACT_ITEM_SECONDARY_OFF_HAND
                 );
 
             final FilterRegistrar.Builder breakBlock =
@@ -107,17 +128,15 @@ public final class Mining extends BasicSkillType {
                     .cancelTransaction(
                         matchTo(
                             filters(
-                                creative(),
+                                value(Keys.GAME_MODE, GameModes.CREATIVE),
                                 any(
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.SANDSTONE)), ALLOW, DENY), level(10)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.COAL_ORE)), ALLOW, DENY), level(15)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.STONEBRICK)), ALLOW, DENY), level(15)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.IRON_ORE)), ALLOW, DENY), level(25)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.COAL_ORE)), ALLOW, DENY), level(10)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.IRON_ORE)), ALLOW, DENY), level(30)), DENY),
                                     matchTo(filters(whenThen(filters(blocks(BlockTypes.LAPIS_ORE)), ALLOW, DENY), level(35)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.GOLD_ORE)), ALLOW, DENY), level(45)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.DIAMOND_ORE)), ALLOW, DENY), level(55)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.GOLD_ORE)), ALLOW, DENY), level(40)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.DIAMOND_ORE)), ALLOW, DENY), level(50)), DENY),
                                     matchTo(filters(whenThen(filters(blocks(BlockTypes.OBSIDIAN)), ALLOW, DENY), level(60)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.NETHERRACK)), ALLOW, DENY), level(75)), DENY),
+                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.NETHERRACK)), ALLOW, DENY), level(65)), DENY),
                                     matchTo(filters(whenThen(filters(blocks(BlockTypes.END_STONE)), ALLOW, DENY), level(85)), DENY),
                                     matchTo(filters(whenThen(filters(blocks(BlockTypes.EMERALD_ORE)), ALLOW, DENY), level(95)), DENY),
                                     matchTo(filters(whenThen(filters(blocks(BlockTypes.LIT_REDSTONE_ORE)), ALLOW, DENY), level(99)), DENY),
@@ -129,10 +148,10 @@ public final class Mining extends BasicSkillType {
                     )
                     .transactionTrigger(
                         triggerIf()
-                            .all(not(creative()), blocks(), natural())
+                            .all(not(value(Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                             .then(
-                                applyIf().any(blocks(BlockTypes.STONE)).then(xp(5)).build(),
-                                applyIf().any(blocks(BlockTypes.NETHERRACK)).then(xp(2.5)).build(),
+                                applyIf().any(blocks(BlockTypes.STONE)).then(xp(10)).build(),
+                                applyIf().any(blocks(BlockTypes.NETHERRACK)).then(xp(5)).build(),
                                 applyIf().any(blocks(BlockTypes.SANDSTONE)).then(xp(4)).build(),
                                 applyIf().any(blocks(BlockTypes.COAL_ORE)).then(xp(8)).build(),
                                 applyIf().any(blocks(BlockTypes.IRON_ORE)).then(xp(15)).build(),
@@ -143,23 +162,19 @@ public final class Mining extends BasicSkillType {
                                 applyIf().any(blocks(BlockTypes.DIAMOND_ORE)).then(xp(35)).build(),
                                 applyIf().any(blocks(BlockTypes.END_STONE)).then(xp(35)).build(),
                                 applyIf().any(blocks(BlockTypes.OBSIDIAN)).then(xp(40)).build(),
-                                applyIf().any(blocks(BlockTypes.EMERALD_ORE)).then(xp(50)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "stonebrick")))).then(xp(4)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "mossy_stonebrick")))).then(xp(7)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick")))).then(xp(15)).build()
+                                applyIf().any(blocks(BlockTypes.EMERALD_ORE)).then(xp(50)).build()
                             )
-                            .elseApply(xp(0.1))
                             .build()
                     );
 
 
             if (es != null && ef != null) {
                 final Currency c = es.getDefaultCurrency();
-                
+
                 breakBlock
                     .transactionTrigger(
                         triggerIf()
-                            .all(not(creative()), blocks(), natural())
+                            .all(not(value(Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                             .then(
                                 applyIf().any(blocks(BlockTypes.STONE)).then(scaledMoney(es, ef, c, 1)).build(),
                                 applyIf().any(blocks(BlockTypes.NETHERRACK)).then(scaledMoney(es, ef, c, 0.9)).build(),
@@ -183,21 +198,13 @@ public final class Mining extends BasicSkillType {
                     );
             }
 
-            this.register(container, USER_CHANGE_BLOCK_BREAK, breakBlock.build());
+            this.register(container, breakBlock.build(), USER_CHANGE_BLOCK_BREAK);
         });
         //@formatter:on
     }
 
     @Override
-    public void onXPChanged(final Cause cause, final Skill skill, final double amount) {
-    }
-
-    @Override
-    public void onLevelChanged(final Cause cause, final Skill skill, final int newLevel) {
-    }
-
-    @Override
     public Optional<FireworkEffectType> getFireworkEffectFor(final int level) {
-        return super.getFireworkEffectFor(level);
+        return Optional.ofNullable(this.levelUpFirework);
     }
 }

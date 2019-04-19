@@ -29,7 +29,9 @@ import org.inspirenxe.skills.api.event.DiscoverContentEvent;
 import org.inspirenxe.skills.api.function.level.LevelFunctionType;
 import org.inspirenxe.skills.api.plugin.SkillsPlugin;
 import org.inspirenxe.skills.api.skill.SkillType;
+import org.inspirenxe.vanillaskills.skill.Farming;
 import org.inspirenxe.vanillaskills.skill.Mining;
+import org.inspirenxe.vanillaskills.skill.Woodcutting;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.config.ConfigDir;
@@ -37,8 +39,6 @@ import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -71,7 +71,9 @@ public final class VanillaSkills extends SkillsPlugin {
     @Listener
     public void onRegisterSkills(final GameRegistryEvent.Register<SkillType> event) {
         this.registry.getType(LevelFunctionType.class, VanillaSkills.ID + ":rs-normal").ifPresent(levelFunction -> {
-            event.register(new Mining(this.container, "mining", "Mining", Text.of(TextColors.AQUA, "Mining"), levelFunction, 99));
+            event.register(new Mining(this.container, levelFunction, 99));
+            event.register(new Farming(this.container, levelFunction, 99));
+            event.register(new Woodcutting(this.container, levelFunction, 99));
         });
     }
 }
