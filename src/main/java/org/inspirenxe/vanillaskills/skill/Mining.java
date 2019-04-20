@@ -25,28 +25,25 @@
 package org.inspirenxe.vanillaskills.skill;
 
 
-import static net.kyori.filter.FilterResponse.ALLOW;
 import static net.kyori.filter.FilterResponse.DENY;
 import static net.kyori.filter.Filters.any;
 import static net.kyori.filter.Filters.not;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_CHANGE_BLOCK_BREAK;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_PRIMARY_MAIN_HAND;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_PRIMARY_OFF_HAND;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_SECONDARY_MAIN_HAND;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_BLOCK_SECONDARY_OFF_HAND;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_PRIMARY_MAIN_HAND;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_SECONDARY_MAIN_HAND;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_PRIMARY_OFF_HAND;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.USER_INTERACT_ITEM_SECONDARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.CHANGE_BLOCK_BREAK;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_SECONDARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_OFF_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.EconomyApplicators.scaledMoney;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
 import static org.inspirenxe.skills.api.skill.builtin.block.TraitValue.trait;
-import static org.inspirenxe.skills.api.skill.builtin.filter.Filters.filters;
-import static org.inspirenxe.skills.api.skill.builtin.filter.MatchResponseToFilter.matchTo;
-import static org.inspirenxe.skills.api.skill.builtin.filter.RedirectResponseFilter.whenThen;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.applyIf;
+import static org.inspirenxe.skills.api.skill.builtin.filter.MatchFilterResponseToResponseFilter.matchTo;
+import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.apply;
 import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockCreatorFilters.natural;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.blocks;
@@ -99,70 +96,65 @@ public final class Mining extends BasicSkillType {
                     registrar()
                         .cancelEvent(
                             matchTo(
-                                filters(
-                                    value(Keys.GAME_MODE, GameModes.CREATIVE),
-                                    any(
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.WOODEN_PICKAXE)), ALLOW, DENY), level(10)), DENY),
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.STONE_PICKAXE)), ALLOW, DENY), level(20)), DENY),
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.IRON_PICKAXE)), ALLOW, DENY), level(30)), DENY),
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.GOLDEN_PICKAXE)), ALLOW, DENY), level(40)), DENY),
-                                        matchTo(filters(whenThen(filters(item(ItemTypes.DIAMOND_PICKAXE)), ALLOW, DENY), level(50)), DENY)
-                                    )
-                                ),
-                                DENY
+                                DENY,
+                                value(Keys.GAME_MODE, GameModes.CREATIVE),
+                                any(
+                                    matchTo(DENY, not(item(ItemTypes.WOODEN_PICKAXE)), level(10)),
+                                    matchTo(DENY, not(item(ItemTypes.STONE_PICKAXE)), level(20)),
+                                    matchTo(DENY, not(item(ItemTypes.IRON_PICKAXE)), level(30)),
+                                    matchTo(DENY, not(item(ItemTypes.GOLDEN_PICKAXE)), level(40)),
+                                    matchTo(DENY, not(item(ItemTypes.DIAMOND_PICKAXE)), level(50))
+                                )
                             )
                         )
                         .build(),
-                    USER_INTERACT_BLOCK_PRIMARY_MAIN_HAND,
-                    USER_INTERACT_BLOCK_PRIMARY_OFF_HAND,
-                    USER_INTERACT_BLOCK_SECONDARY_MAIN_HAND,
-                    USER_INTERACT_BLOCK_SECONDARY_OFF_HAND,
-                    USER_INTERACT_ITEM_PRIMARY_MAIN_HAND,
-                    USER_INTERACT_ITEM_PRIMARY_OFF_HAND,
-                    USER_INTERACT_ITEM_SECONDARY_MAIN_HAND,
-                    USER_INTERACT_ITEM_SECONDARY_OFF_HAND
+                    INTERACT_BLOCK_PRIMARY_MAIN_HAND,
+                    INTERACT_BLOCK_PRIMARY_OFF_HAND,
+                    INTERACT_BLOCK_SECONDARY_MAIN_HAND,
+                    INTERACT_BLOCK_SECONDARY_OFF_HAND,
+                    INTERACT_ITEM_PRIMARY_MAIN_HAND,
+                    INTERACT_ITEM_PRIMARY_OFF_HAND,
+                    INTERACT_ITEM_SECONDARY_MAIN_HAND,
+                    INTERACT_ITEM_SECONDARY_OFF_HAND
                 );
 
             final FilterRegistrar.Builder breakBlock =
                 registrar()
                     .cancelTransaction(
                         matchTo(
-                            filters(
-                                value(Keys.GAME_MODE, GameModes.CREATIVE),
-                                any(
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.COAL_ORE)), ALLOW, DENY), level(10)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.IRON_ORE)), ALLOW, DENY), level(30)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.LAPIS_ORE)), ALLOW, DENY), level(35)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.GOLD_ORE)), ALLOW, DENY), level(40)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.DIAMOND_ORE)), ALLOW, DENY), level(50)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.OBSIDIAN)), ALLOW, DENY), level(60)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.NETHERRACK)), ALLOW, DENY), level(65)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.END_STONE)), ALLOW, DENY), level(85)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.EMERALD_ORE)), ALLOW, DENY), level(95)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.LIT_REDSTONE_ORE)), ALLOW, DENY), level(99)), DENY),
-                                    matchTo(filters(whenThen(filters(blocks(BlockTypes.REDSTONE_ORE)), ALLOW, DENY), level(99)), DENY)
-                                )
-                            ),
-                            DENY
+                            DENY,
+                            value(Keys.GAME_MODE, GameModes.CREATIVE),
+                            any(
+                                matchTo(DENY, not(blocks(BlockTypes.COAL_ORE)), level(10)),
+                                matchTo(DENY, not(blocks(BlockTypes.IRON_ORE)), level(30)),
+                                matchTo(DENY, not(blocks(BlockTypes.LAPIS_ORE)), level(35)),
+                                matchTo(DENY, not(blocks(BlockTypes.GOLD_ORE)), level(40)),
+                                matchTo(DENY, not(blocks(BlockTypes.DIAMOND_ORE)), level(50)),
+                                matchTo(DENY, not(blocks(BlockTypes.OBSIDIAN)), level(60)),
+                                matchTo(DENY, not(blocks(BlockTypes.NETHERRACK)), level(65)),
+                                matchTo(DENY, not(blocks(BlockTypes.END_STONE)), level(85)),
+                                matchTo(DENY, not(blocks(BlockTypes.EMERALD_ORE)), level(95)),
+                                matchTo(DENY, not(blocks(BlockTypes.LIT_REDSTONE_ORE, BlockTypes.REDSTONE_ORE)), level(99))
+                            )
                         )
                     )
                     .transactionTrigger(
                         triggerIf()
                             .all(not(value(Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                             .then(
-                                applyIf().any(blocks(BlockTypes.STONE)).then(xp(10)).build(),
-                                applyIf().any(blocks(BlockTypes.NETHERRACK)).then(xp(5)).build(),
-                                applyIf().any(blocks(BlockTypes.SANDSTONE)).then(xp(4)).build(),
-                                applyIf().any(blocks(BlockTypes.COAL_ORE)).then(xp(8)).build(),
-                                applyIf().any(blocks(BlockTypes.IRON_ORE)).then(xp(15)).build(),
-                                applyIf().any(blocks(BlockTypes.LAPIS_ORE)).then(xp(15)).build(),
-                                applyIf().any(blocks(BlockTypes.GOLD_ORE)).then(xp(25)).build(),
-                                applyIf().any(blocks(BlockTypes.REDSTONE_ORE)).then(xp(30)).build(),
-                                applyIf().any(blocks(BlockTypes.LIT_REDSTONE_ORE)).then(xp(35)).build(),
-                                applyIf().any(blocks(BlockTypes.DIAMOND_ORE)).then(xp(35)).build(),
-                                applyIf().any(blocks(BlockTypes.END_STONE)).then(xp(35)).build(),
-                                applyIf().any(blocks(BlockTypes.OBSIDIAN)).then(xp(40)).build(),
-                                applyIf().any(blocks(BlockTypes.EMERALD_ORE)).then(xp(50)).build()
+                                apply(xp(1)).when(blocks(BlockTypes.STONE)),
+                                apply(xp(4)).when(blocks(BlockTypes.SANDSTONE)),
+                                apply(xp(5)).when(blocks(BlockTypes.NETHERRACK)),
+                                apply(xp(8)).when(blocks(BlockTypes.COAL_ORE)),
+                                apply(xp(15)).when(blocks(BlockTypes.IRON_ORE)),
+                                apply(xp(15)).when(blocks(BlockTypes.LAPIS_ORE)),
+                                apply(xp(25)).when(blocks(BlockTypes.GOLD_ORE)),
+                                apply(xp(30)).when(blocks(BlockTypes.REDSTONE_ORE)),
+                                apply(xp(35)).when(blocks(BlockTypes.LIT_REDSTONE_ORE)),
+                                apply(xp(35)).when(blocks(BlockTypes.DIAMOND_ORE)),
+                                apply(xp(35)).when(blocks(BlockTypes.END_STONE)),
+                                apply(xp(40)).when(blocks(BlockTypes.OBSIDIAN)),
+                                apply(xp(50)).when(blocks(BlockTypes.EMERALD_ORE))
                             )
                             .build()
                     );
@@ -176,29 +168,28 @@ public final class Mining extends BasicSkillType {
                         triggerIf()
                             .all(not(value(Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                             .then(
-                                applyIf().any(blocks(BlockTypes.STONE)).then(scaledMoney(es, ef, c, 1)).build(),
-                                applyIf().any(blocks(BlockTypes.NETHERRACK)).then(scaledMoney(es, ef, c, 0.9)).build(),
-                                applyIf().any(blocks(BlockTypes.SANDSTONE)).then(scaledMoney(es, ef, c, 2)).build(),
-                                applyIf().any(blocks(BlockTypes.COAL_ORE)).then(scaledMoney(es, ef, c, 3)).build(),
-                                applyIf().any(blocks(BlockTypes.IRON_ORE)).then(scaledMoney(es, ef, c, 4)).build(),
-                                applyIf().any(blocks(BlockTypes.LAPIS_ORE)).then(scaledMoney(es, ef, c, 5)).build(),
-                                applyIf().any(blocks(BlockTypes.GOLD_ORE)).then(scaledMoney(es, ef, c, 6)).build(),
-                                applyIf().any(blocks(BlockTypes.REDSTONE_ORE)).then(scaledMoney(es, ef, c, 7)).build(),
-                                applyIf().any(blocks(BlockTypes.LIT_REDSTONE_ORE)).then(scaledMoney(es, ef, c, 7)).build(),
-                                applyIf().any(blocks(BlockTypes.DIAMOND_ORE)).then(scaledMoney(es, ef, c, 8)).build(),
-                                applyIf().any(blocks(BlockTypes.END_STONE)).then(scaledMoney(es, ef, c, 1)).build(),
-                                applyIf().any(blocks(BlockTypes.OBSIDIAN)).then(scaledMoney(es, ef, c, 8)).build(),
-                                applyIf().any(blocks(BlockTypes.EMERALD_ORE)).then(scaledMoney(es, ef, c, 10)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "stonebrick")))).then(scaledMoney(es, ef, c, 4)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "mossy_stonebrick")))).then(scaledMoney(es, ef, c, 5)).build(),
-                                applyIf().any(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick")))).then(scaledMoney(es, ef, c, 5)).build()
+                                apply(scaledMoney(es, ef, c, 1)).when(blocks(BlockTypes.STONE)),
+                                apply(scaledMoney(es, ef, c, 0.9)).when(blocks(BlockTypes.NETHERRACK)),
+                                apply(scaledMoney(es, ef, c, 2)).when(blocks(BlockTypes.SANDSTONE)),
+                                apply(scaledMoney(es, ef, c, 3)).when(blocks(BlockTypes.COAL_ORE)),
+                                apply(scaledMoney(es, ef, c, 4)).when(blocks(BlockTypes.IRON_ORE)),
+                                apply(scaledMoney(es, ef, c, 5)).when(blocks(BlockTypes.LAPIS_ORE)),
+                                apply(scaledMoney(es, ef, c, 6)).when(blocks(BlockTypes.GOLD_ORE)),
+                                apply(scaledMoney(es, ef, c, 7)).when(blocks(BlockTypes.REDSTONE_ORE)),
+                                apply(scaledMoney(es, ef, c, 7)).when(blocks(BlockTypes.LIT_REDSTONE_ORE)),
+                                apply(scaledMoney(es, ef, c, 8)).when(blocks(BlockTypes.DIAMOND_ORE)),
+                                apply(scaledMoney(es, ef, c, 1)).when(blocks(BlockTypes.END_STONE)),
+                                apply(scaledMoney(es, ef, c, 8)).when(blocks(BlockTypes.OBSIDIAN)),
+                                apply(scaledMoney(es, ef, c, 10)).when(blocks(BlockTypes.EMERALD_ORE)),
+                                apply(scaledMoney(es, ef, c, 4)).when(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "stonebrick")))),
+                                apply(scaledMoney(es, ef, c, 5)).when(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "mossy_stonebrick")))),
+                                apply(scaledMoney(es, ef, c, 5)).when(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick"))))
                             )
-                            .elseApply(scaledMoney(es, ef, c, 0.1))
                             .build()
                     );
             }
 
-            this.register(container, breakBlock.build(), USER_CHANGE_BLOCK_BREAK);
+            this.register(container, breakBlock.build(), CHANGE_BLOCK_BREAK);
         });
         //@formatter:on
     }
