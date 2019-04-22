@@ -52,7 +52,7 @@ public final class Woodcutting extends BasicSkillType {
     @Override
     protected void onConfigure(final Collection<SkillHolderContainer> containers) {
         final EconomyService es = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
-        final EconomyFunctionType ef = Sponge.getRegistry().getType(EconomyFunctionType.class, "vanilla_skills:standard").orElse(null);
+        final EconomyFunctionType ef = Sponge.getRegistry().getType(EconomyFunctionType.class, VanillaSkills.ID + ":standard").orElse(null);
 
         //@formatter:off
         //@formatter:on
