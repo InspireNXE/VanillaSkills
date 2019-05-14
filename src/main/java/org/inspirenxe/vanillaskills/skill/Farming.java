@@ -25,9 +25,11 @@
 package org.inspirenxe.vanillaskills.skill;
 
 import static net.kyori.filter.FilterResponse.DENY;
+import static net.kyori.filter.Filters.all;
 import static net.kyori.filter.Filters.any;
 import static net.kyori.filter.Filters.not;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.CHANGE_BLOCK_BREAK;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.DROP_ITEM_DESTRUCT;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_MAIN_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_OFF_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_SECONDARY_MAIN_HAND;
@@ -38,6 +40,11 @@ import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_I
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_OFF_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.CHANGE_BLOCK_PLACE;
 import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
+import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_EVENT;
+import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_TRANSACTION;
+import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PROCESSING_PLAYER;
+import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.ENTITY_SPAWN;
+import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.EVENT;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
 import static org.inspirenxe.skills.api.skill.builtin.block.TraitValue.trait;
@@ -47,6 +54,7 @@ import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerF
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.blocks;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.states;
 import static org.inspirenxe.skills.api.skill.builtin.filter.data.ValueFilters.value;
+import static org.inspirenxe.skills.api.skill.builtin.filter.entity.DropFilters.drops;
 import static org.inspirenxe.skills.api.skill.builtin.filter.item.ItemFilters.items;
 import static org.inspirenxe.skills.api.skill.builtin.filter.level.LevelFilters.level;
 
@@ -90,10 +98,11 @@ public final class Farming extends BasicSkillType {
             // Deny tools
             .register(container,
                 registrar()
-                .cancelEvent(
+                .addFilter(
+                    CANCEL_EVENT,
                     matchTo(
                         DENY,
-                        value(Keys.GAME_MODE, GameModes.CREATIVE),
+                        value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
                             matchTo(DENY, not(items(ItemTypes.STONE_HOE)), level(20)),
                             matchTo(DENY, not(items(ItemTypes.IRON_HOE)), level(30)),
@@ -115,19 +124,21 @@ public final class Farming extends BasicSkillType {
             // Deny planting seeds
             .register(container,
                 registrar()
-                .cancelTransaction(
+                .addFilter(
+                    CANCEL_TRANSACTION,
                     matchTo(
                         DENY,
-                        value(Keys.GAME_MODE, GameModes.CREATIVE),
+                        value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
                             matchTo(DENY, not(blocks(BlockTypes.CARROTS)), level(10))
                         )
                     )
                 )
                 // Reward turning soil into farmland
-                .transactionTrigger(
+                .addTrigger(
+                    EVENT,
                     triggerIf()
-                    .all(not(value(Keys.GAME_MODE, GameModes.CREATIVE)), blocks(BlockTypes.FARMLAND))
+                    .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)), blocks(BlockTypes.FARMLAND))
                     .then(
                         apply(xp(0.25)).when(items(ItemTypes.WOODEN_HOE)),
                         apply(xp(0.50)).when(items(ItemTypes.STONE_HOE)),
@@ -142,10 +153,11 @@ public final class Farming extends BasicSkillType {
             // Deny breaking crops
             .register(container,
                 registrar()
-                .cancelTransaction(
+                .addFilter(
+                    CANCEL_EVENT,
                     matchTo(
                         DENY,
-                        value(Keys.GAME_MODE, GameModes.CREATIVE),
+                        value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
                             matchTo(DENY, not(states(state(BlockTypes.CARROTS, trait(IntegerTraits.CARROTS_AGE, 7)))), level(10))
                         )
@@ -154,7 +166,19 @@ public final class Farming extends BasicSkillType {
                 .build(),
                 CHANGE_BLOCK_BREAK
             )
-            // TODO Xp per drop handling
+            .register(container,
+                registrar()
+                .addTrigger(
+                    ENTITY_SPAWN,
+                    triggerIf()
+                    .then(
+                        apply(xp(10)).when(all(states(state(BlockTypes.CARROTS, trait(IntegerTraits.CARROTS_AGE, 7))), drops(ItemTypes.CARROT)))
+                    )
+                    .build()
+                )
+                .build(),
+                DROP_ITEM_DESTRUCT
+            )
         );
         //@formatter:on
     }

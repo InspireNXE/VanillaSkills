@@ -37,6 +37,10 @@ import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_I
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_PRIMARY_OFF_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_OFF_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
+import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_EVENT;
+import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_TRANSACTION;
+import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PROCESSING_PLAYER;
+import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.TRANSACTION;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.EconomyApplicators.scaledMoney;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
@@ -93,10 +97,11 @@ public final class Mining extends BasicSkillType {
             this
                 .register(container,
                     registrar()
-                    .cancelEvent(
+                    .addFilter(
+                        CANCEL_EVENT,
                         matchTo(
                             DENY,
-                            value(Keys.GAME_MODE, GameModes.CREATIVE),
+                            value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                             any(
                                 matchTo(DENY, not(items(ItemTypes.STONE_PICKAXE)), level(20)),
                                 matchTo(DENY, not(items(ItemTypes.IRON_PICKAXE)), level(30)),
@@ -118,10 +123,11 @@ public final class Mining extends BasicSkillType {
 
             final FilterRegistrar.Builder breakBlock =
                 registrar()
-                .cancelTransaction(
+                .addFilter(
+                    CANCEL_TRANSACTION,
                     matchTo(
                         DENY,
-                        value(Keys.GAME_MODE, GameModes.CREATIVE),
+                        value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
                             matchTo(DENY, not(blocks(BlockTypes.COAL_ORE)), level(10)),
                             matchTo(DENY, not(blocks(BlockTypes.IRON_ORE)), level(30)),
@@ -136,9 +142,10 @@ public final class Mining extends BasicSkillType {
                         )
                     )
                 )
-                .transactionTrigger(
+                .addTrigger(
+                    TRANSACTION,
                     triggerIf()
-                    .all(not(value(Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
+                    .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                     .then(
                         apply(xp(10)).when(blocks(BlockTypes.STONE)),
                         apply(xp(10)).when(blocks(BlockTypes.END_STONE)),
@@ -161,9 +168,10 @@ public final class Mining extends BasicSkillType {
                 final Currency c = es.getDefaultCurrency();
 
                 breakBlock
-                    .transactionTrigger(
+                    .addTrigger(
+                        TRANSACTION,
                         triggerIf()
-                        .all(not(value(Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
+                        .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                         .then(
                             apply(scaledMoney(es, ef, c, 0.9)).when(blocks(BlockTypes.NETHERRACK)),
                             apply(scaledMoney(es, ef, c, 1)).when(blocks(BlockTypes.STONE)),

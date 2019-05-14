@@ -29,12 +29,14 @@ import org.inspirenxe.skills.api.event.DiscoverContentEvent;
 import org.inspirenxe.skills.api.function.level.LevelFunctionType;
 import org.inspirenxe.skills.api.plugin.SkillsPlugin;
 import org.inspirenxe.skills.api.skill.SkillType;
+import org.inspirenxe.vanillaskills.skill.Crafting;
 import org.inspirenxe.vanillaskills.skill.Farming;
 import org.inspirenxe.vanillaskills.skill.Mining;
 import org.inspirenxe.vanillaskills.skill.Woodcutting;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.plugin.Plugin;
@@ -68,12 +70,13 @@ public final class VanillaSkills extends SkillsPlugin {
         event.addSearchPath(this.configDir);
     }
 
-    @Listener
+    @Listener(order = Order.LAST)
     public void onRegisterSkills(final GameRegistryEvent.Register<SkillType> event) {
         this.registry.getType(LevelFunctionType.class, VanillaSkills.ID + ":rs-normal").ifPresent(levelFunction -> {
             event.register(new Mining(this.container, levelFunction, 99));
             event.register(new Farming(this.container, levelFunction, 99));
             event.register(new Woodcutting(this.container, levelFunction, 99));
+            event.register(new Crafting(this.container, levelFunction, 99));
         });
     }
 }
