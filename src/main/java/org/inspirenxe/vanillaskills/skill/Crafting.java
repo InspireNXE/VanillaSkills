@@ -63,7 +63,7 @@ public final class Crafting extends BasicSkillType {
     private final FireworkEffectType levelUpFirework;
 
     public Crafting(final PluginContainer container, final LevelFunctionType levelFunction, final int maxLevel) {
-        super(container, "crafting", "Crafting", Text.of(TextColors.AQUA, "Crafting"), levelFunction, maxLevel);
+        super(container, "crafting", "Crafting", Text.of(TextColors.LIGHT_PURPLE, "Crafting"), levelFunction, maxLevel);
 
         this.levelUpFirework = Sponge.getRegistry().getType(FireworkEffectType.class, VanillaSkills.ID + ":crafting-level-up").orElse(null);
     }
@@ -83,7 +83,6 @@ public final class Crafting extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(items(ItemTypes.STONE_PICKAXE)), level(20)),
                             matchTo(DENY, not(items(ItemTypes.IRON_PICKAXE)), level(30)),
                             matchTo(DENY, not(items(ItemTypes.GOLDEN_PICKAXE)), level(40)),
                             matchTo(DENY, not(items(ItemTypes.DIAMOND_PICKAXE)), level(50))
@@ -106,6 +105,6 @@ public final class Crafting extends BasicSkillType {
 
     @Override
     public Optional<FireworkEffectType> getFireworkEffectFor( int level) {
-        return Optional.of(this.levelUpFirework);
+        return Optional.ofNullable(this.levelUpFirework);
     }
 }
