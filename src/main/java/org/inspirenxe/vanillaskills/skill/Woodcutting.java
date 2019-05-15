@@ -24,6 +24,38 @@
  */
 package org.inspirenxe.vanillaskills.skill;
 
+import static net.kyori.filter.FilterResponse.DENY;
+import static net.kyori.filter.Filters.any;
+import static net.kyori.filter.Filters.not;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.CHANGE_BLOCK_BREAK;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_SECONDARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
+import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_EVENT;
+import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_TRANSACTION;
+import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PROCESSING_PLAYER;
+import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.TRANSACTION;
+import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
+import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
+import static org.inspirenxe.skills.api.skill.builtin.block.TraitValue.trait;
+import static org.inspirenxe.skills.api.skill.builtin.filter.MatchFilterResponseToResponseFilter.matchTo;
+import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.apply;
+import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
+import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockCreatorFilters.creatorTracked;
+import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockCreatorFilters.natural;
+import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.states;
+import static org.inspirenxe.skills.api.skill.builtin.filter.data.ValueFilters.value;
+import static org.inspirenxe.skills.api.skill.builtin.filter.item.ItemFilters.items;
+import static org.inspirenxe.skills.api.skill.builtin.filter.level.LevelFilters.level;
+import static org.spongepowered.api.block.trait.EnumTraits.LOG2_VARIANT;
+import static org.spongepowered.api.block.trait.EnumTraits.LOG_VARIANT;
+
 import org.inspirenxe.skills.api.effect.firework.FireworkEffectType;
 import org.inspirenxe.skills.api.function.economy.EconomyFunctionType;
 import org.inspirenxe.skills.api.function.level.LevelFunctionType;
@@ -31,6 +63,10 @@ import org.inspirenxe.skills.api.skill.builtin.BasicSkillType;
 import org.inspirenxe.skills.api.skill.holder.SkillHolderContainer;
 import org.inspirenxe.vanillaskills.VanillaSkills;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.Text;
@@ -55,6 +91,67 @@ public final class Woodcutting extends BasicSkillType {
         final EconomyFunctionType ef = Sponge.getRegistry().getType(EconomyFunctionType.class, VanillaSkills.ID + ":standard").orElse(null);
 
         //@formatter:off
+
+        containers.forEach(container -> this
+            .register(container,
+                registrar()
+                .addFilter(
+                    CANCEL_EVENT,
+                    matchTo(
+                        DENY,
+                        value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
+                        any(
+                            matchTo(DENY, not(items(ItemTypes.STONE_AXE)), level(20)),
+                            matchTo(DENY, not(items(ItemTypes.IRON_AXE)), level(30)),
+                            matchTo(DENY, not(items(ItemTypes.GOLDEN_AXE)), level(40)),
+                            matchTo(DENY, not(items(ItemTypes.DIAMOND_AXE)), level(50))
+                        )
+                    )
+                )
+                .build(),
+                INTERACT_BLOCK_PRIMARY_MAIN_HAND,
+                INTERACT_BLOCK_PRIMARY_OFF_HAND,
+                INTERACT_BLOCK_SECONDARY_MAIN_HAND,
+                INTERACT_BLOCK_SECONDARY_OFF_HAND,
+                INTERACT_ITEM_PRIMARY_MAIN_HAND,
+                INTERACT_ITEM_PRIMARY_OFF_HAND,
+                INTERACT_ITEM_SECONDARY_MAIN_HAND,
+                INTERACT_ITEM_SECONDARY_OFF_HAND
+            )
+            .register(container,
+                registrar()
+                .addFilter(
+                    CANCEL_TRANSACTION,
+                    matchTo(
+                        DENY,
+                        value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
+                        any(
+                            matchTo(DENY, not(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "dark_oak")))), level(10)),
+                            matchTo(DENY, not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "spruce")))), level(20)),
+                            matchTo(DENY, not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "birch")))), level(30)),
+                            matchTo(DENY, not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "jungle")))), level(40)),
+                            matchTo(DENY, not(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "acacia")))), level(50))
+                        )
+                    )
+                )
+                .addTrigger(
+                    TRANSACTION,
+                    triggerIf()
+                    .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)), any(creatorTracked(), natural()))
+                    .then(
+                        apply(xp(5)).when(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "oak")))),
+                        apply(xp(7)).when(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "dark_oak")))),
+                        apply(xp(9)).when(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "spruce")))),
+                        apply(xp(11)).when(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "birch")))),
+                        apply(xp(13)).when(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "jungle")))),
+                        apply(xp(15)).when(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "acacia"))))
+                    )
+                    .build()
+                )
+                .build(),
+                CHANGE_BLOCK_BREAK
+            ));
+
         //@formatter:on
     }
 

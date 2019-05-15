@@ -45,6 +45,7 @@ import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_TRAN
 import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PROCESSING_PLAYER;
 import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.ENTITY_SPAWN;
 import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.EVENT;
+import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.TRANSACTION;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
 import static org.inspirenxe.skills.api.skill.builtin.block.TraitValue.trait;
@@ -136,7 +137,7 @@ public final class Farming extends BasicSkillType {
                 )
                 // Reward turning soil into farmland
                 .addTrigger(
-                    EVENT,
+                    TRANSACTION,
                     triggerIf()
                     .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)), blocks(BlockTypes.FARMLAND))
                     .then(
@@ -144,6 +145,16 @@ public final class Farming extends BasicSkillType {
                         apply(xp(0.50)).when(items(ItemTypes.STONE_HOE)),
                         apply(xp(0.75)).when(items(ItemTypes.GOLDEN_HOE)),
                         apply(xp(1)).when(items(ItemTypes.DIAMOND_HOE))
+                    )
+                    .build()
+                )
+                // Reward XP for planting seeds
+                .addTrigger(
+                    TRANSACTION,
+                    triggerIf()
+                    .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)))
+                    .then(
+                        apply(xp(0.1)).when(items(ItemTypes.WHEAT_SEEDS))
                     )
                     .build()
                 )
@@ -166,13 +177,16 @@ public final class Farming extends BasicSkillType {
                 .build(),
                 CHANGE_BLOCK_BREAK
             )
+            // Reward harvesting
             .register(container,
                 registrar()
                 .addTrigger(
                     ENTITY_SPAWN,
                     triggerIf()
                     .then(
-                        apply(xp(10)).when(all(states(state(BlockTypes.CARROTS, trait(IntegerTraits.CARROTS_AGE, 7))), drops(ItemTypes.CARROT)))
+                        apply(xp(1)).when(all(states(state(BlockTypes.WHEAT, trait(IntegerTraits.WHEAT_AGE, 7))), drops(ItemTypes.WHEAT_SEEDS))),
+                        apply(xp(10)).when(all(states(state(BlockTypes.WHEAT, trait(IntegerTraits.WHEAT_AGE, 7))), drops(ItemTypes.WHEAT))),
+                        apply(xp(15)).when(all(states(state(BlockTypes.CARROTS, trait(IntegerTraits.CARROTS_AGE, 7))), drops(ItemTypes.CARROT)))
                     )
                     .build()
                 )
