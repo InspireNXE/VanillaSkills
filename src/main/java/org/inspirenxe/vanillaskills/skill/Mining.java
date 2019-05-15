@@ -147,17 +147,13 @@ public final class Mining extends BasicSkillType {
                     triggerIf()
                     .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                     .then(
-                        apply(xp(10)).when(blocks(BlockTypes.STONE)),
-                        apply(xp(10)).when(blocks(BlockTypes.END_STONE)),
-                        apply(xp(10)).when(blocks(BlockTypes.SANDSTONE)),
-                        apply(xp(15)).when(blocks(BlockTypes.NETHERRACK)),
-                        apply(xp(15)).when(blocks(BlockTypes.LAPIS_ORE)),
+                        apply(xp(10)).when(blocks(BlockTypes.STONE, BlockTypes.END_STONE, BlockTypes.SANDSTONE)),
+                        apply(xp(15)).when(blocks(BlockTypes.LAPIS_ORE, BlockTypes.NETHERRACK)),
                         apply(xp(30)).when(blocks(BlockTypes.COAL_ORE)),
                         apply(xp(60)).when(blocks(BlockTypes.IRON_ORE)),
                         apply(xp(90)).when(blocks(BlockTypes.GOLD_ORE)),
                         apply(xp(100)).when(blocks(BlockTypes.OBSIDIAN)),
-                        apply(xp(120)).when(blocks(BlockTypes.REDSTONE_ORE)),
-                        apply(xp(120)).when(blocks(BlockTypes.LIT_REDSTONE_ORE)),
+                        apply(xp(120)).when(blocks(BlockTypes.REDSTONE_ORE, BlockTypes.LIT_REDSTONE_ORE)),
                         apply(xp(150)).when(blocks(BlockTypes.DIAMOND_ORE)),
                         apply(xp(170)).when(blocks(BlockTypes.EMERALD_ORE))
                     )

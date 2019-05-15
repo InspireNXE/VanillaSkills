@@ -25,18 +25,18 @@
 package org.inspirenxe.vanillaskills.skill;
 
 import static net.kyori.filter.FilterResponse.DENY;
-import static net.kyori.filter.Filters.any;
 import static net.kyori.filter.Filters.not;
-import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.CRAFT_ITEM_CRAFT;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.DESTRUCT_ENTITY_DEATH;
 import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
 import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_EVENT;
 import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PROCESSING_PLAYER;
-import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.EVENT;
+import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.ENTITY;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.filter.MatchFilterResponseToResponseFilter.matchTo;
 import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.apply;
 import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
 import static org.inspirenxe.skills.api.skill.builtin.filter.data.ValueFilters.value;
+import static org.inspirenxe.skills.api.skill.builtin.filter.entity.EntityFilters.entities;
 import static org.inspirenxe.skills.api.skill.builtin.filter.item.ItemFilters.items;
 import static org.inspirenxe.skills.api.skill.builtin.filter.level.LevelFilters.level;
 
@@ -48,6 +48,7 @@ import org.inspirenxe.skills.api.skill.holder.SkillHolderContainer;
 import org.inspirenxe.vanillaskills.VanillaSkills;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -56,20 +57,19 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Collection;
-import java.util.Optional;
 
-public final class Crafting extends BasicSkillType {
+public final class Hunter extends BasicSkillType {
 
     private final FireworkEffectType levelUpFirework;
 
-    public Crafting(final PluginContainer container, final LevelFunctionType levelFunction, final int maxLevel) {
-        super(container, "crafting", "Crafting", Text.of(TextColors.LIGHT_PURPLE, "Crafting"), levelFunction, maxLevel);
+    public Hunter(final PluginContainer container, final LevelFunctionType levelFunction, final int maxLevel) {
+        super(container, "hunter", "Hunter", Text.of(TextColors.DARK_RED, "Hunter"), levelFunction, maxLevel);
 
-        this.levelUpFirework = Sponge.getRegistry().getType(FireworkEffectType.class, VanillaSkills.ID + ":crafting-level-up").orElse(null);
+        this.levelUpFirework = Sponge.getRegistry().getType(FireworkEffectType.class, VanillaSkills.ID + ":hunter-level-up").orElse(null);
     }
 
     @Override
-    protected void onConfigure(final Collection<SkillHolderContainer> containers) {
+    protected void onConfigure(Collection<SkillHolderContainer> containers) {
         final EconomyService es = Sponge.getServiceManager().provide(EconomyService.class).orElse(null);
         final EconomyFunctionType ef = Sponge.getRegistry().getType(EconomyFunctionType.class, VanillaSkills.ID + ":standard").orElse(null);
 
@@ -79,38 +79,24 @@ public final class Crafting extends BasicSkillType {
                 registrar()
                 .addFilter(
                     CANCEL_EVENT,
-                    matchTo(
-                        DENY,
-                        value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
-                        any(
-                            matchTo(DENY, not(items(ItemTypes.TORCH)), level(5)),
-                            matchTo(DENY, not(items(ItemTypes.STONE_PICKAXE, ItemTypes.STONE_AXE, ItemTypes.STONE_HOE, ItemTypes.STONE_SHOVEL)), level(20)),
-                            matchTo(DENY, not(items(ItemTypes.IRON_PICKAXE, ItemTypes.IRON_AXE, ItemTypes.IRON_HOE, ItemTypes.IRON_SHOVEL)), level(30)),
-                            matchTo(DENY, not(items(ItemTypes.GOLDEN_PICKAXE, ItemTypes.GOLDEN_AXE, ItemTypes.GOLDEN_HOE, ItemTypes.GOLDEN_SHOVEL)), level(40)),
-                            matchTo(DENY, not(items(ItemTypes.DIAMOND_PICKAXE, ItemTypes.DIAMOND_AXE, ItemTypes.DIAMOND_HOE, ItemTypes.DIAMOND_SHOVEL)), level(50))
-                        )
-                    )
+                    matchTo(DENY, not(items(ItemTypes.STONE_SWORD)), level(20)),
+                    matchTo(DENY, not(items(ItemTypes.IRON_SWORD)), level(30)),
+                    matchTo(DENY, not(items(ItemTypes.GOLDEN_SWORD)), level(40)),
+                    matchTo(DENY, not(items(ItemTypes.DIAMOND_SWORD)), level(50))
                 )
                 .addTrigger(
-                    EVENT,
+                    ENTITY,
                     triggerIf()
                     .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)))
                     .then(
-                        apply(xp(5)).when(items(ItemTypes.WOODEN_PICKAXE, ItemTypes.WOODEN_AXE)),
-                        apply(xp(10)).when(items(ItemTypes.STONE_PICKAXE, ItemTypes.STONE_AXE)),
-                        apply(xp(15)).when(items(ItemTypes.IRON_PICKAXE, ItemTypes.IRON_AXE)),
-                        apply(xp(20)).when(items(ItemTypes.GOLDEN_PICKAXE, ItemTypes.GOLDEN_AXE)),
-                        apply(xp(25)).when(items(ItemTypes.DIAMOND_PICKAXE, ItemTypes.DIAMOND_AXE))
+                        apply(xp(50)).when(entities(EntityTypes.ZOMBIE)),
+                        apply(xp(75)).when(entities(EntityTypes.SKELETON)),
+                        apply(xp(100)).when(entities(EntityTypes.CREEPER))
                     )
                     .build()
                 )
                 .build(),
-                CRAFT_ITEM_CRAFT
+                DESTRUCT_ENTITY_DEATH
             ));
-    }
-
-    @Override
-    public Optional<FireworkEffectType> getFireworkEffectFor( int level) {
-        return Optional.ofNullable(this.levelUpFirework);
     }
 }

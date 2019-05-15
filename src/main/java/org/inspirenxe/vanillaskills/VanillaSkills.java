@@ -31,6 +31,7 @@ import org.inspirenxe.skills.api.plugin.SkillsPlugin;
 import org.inspirenxe.skills.api.skill.SkillType;
 import org.inspirenxe.vanillaskills.skill.Crafting;
 import org.inspirenxe.vanillaskills.skill.Farming;
+import org.inspirenxe.vanillaskills.skill.Hunter;
 import org.inspirenxe.vanillaskills.skill.Mining;
 import org.inspirenxe.vanillaskills.skill.Woodcutting;
 import org.slf4j.Logger;
@@ -77,6 +78,7 @@ public final class VanillaSkills extends SkillsPlugin {
             event.register(new Farming(this.container, levelFunction, 99));
             event.register(new Woodcutting(this.container, levelFunction, 99));
             event.register(new Crafting(this.container, levelFunction, 99));
+            event.register(new Hunter(this.container, levelFunction, 99));
         });
     }
 }

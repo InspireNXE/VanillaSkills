@@ -43,8 +43,7 @@ import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
 import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_EVENT;
 import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_TRANSACTION;
 import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PROCESSING_PLAYER;
-import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.ENTITY_SPAWN;
-import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.EVENT;
+import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.ENTITY;
 import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.TRANSACTION;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
@@ -181,7 +180,7 @@ public final class Farming extends BasicSkillType {
             .register(container,
                 registrar()
                 .addTrigger(
-                    ENTITY_SPAWN,
+                    ENTITY,
                     triggerIf()
                     .then(
                         apply(xp(1)).when(all(states(state(BlockTypes.WHEAT, trait(IntegerTraits.WHEAT_AGE, 7))), drops(ItemTypes.WHEAT_SEEDS))),
