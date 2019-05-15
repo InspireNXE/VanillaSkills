@@ -83,6 +83,7 @@ public final class Crafting extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
+                            matchTo(DENY, not(items(ItemTypes.STONE_PICKAXE)), level(20)),
                             matchTo(DENY, not(items(ItemTypes.IRON_PICKAXE)), level(30)),
                             matchTo(DENY, not(items(ItemTypes.GOLDEN_PICKAXE)), level(40)),
                             matchTo(DENY, not(items(ItemTypes.DIAMOND_PICKAXE)), level(50))
@@ -94,7 +95,11 @@ public final class Crafting extends BasicSkillType {
                     triggerIf()
                     .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)))
                     .then(
-                        apply(xp(10)).when(items(ItemTypes.STONE_PICKAXE))
+                        apply(xp(5)).when(items(ItemTypes.WOODEN_PICKAXE)),
+                        apply(xp(10)).when(items(ItemTypes.STONE_PICKAXE)),
+                        apply(xp(15)).when(items(ItemTypes.IRON_PICKAXE)),
+                        apply(xp(20)).when(items(ItemTypes.GOLDEN_PICKAXE)),
+                        apply(xp(25)).when(items(ItemTypes.DIAMOND_PICKAXE))
                     )
                     .build()
                 )
