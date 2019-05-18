@@ -34,8 +34,8 @@ import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PRO
 import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.EVENT;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.filter.MatchFilterResponseToResponseFilter.matchTo;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.apply;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerEntry.apply;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerFilter.triggerIf;
 import static org.inspirenxe.skills.api.skill.builtin.filter.data.ValueFilters.value;
 import static org.inspirenxe.skills.api.skill.builtin.filter.item.ItemFilters.items;
 import static org.inspirenxe.skills.api.skill.builtin.filter.level.LevelFilters.level;
@@ -110,7 +110,7 @@ public final class Crafting extends BasicSkillType {
     }
 
     @Override
-    public Optional<FireworkEffectType> getFireworkEffectFor( int level) {
+    public Optional<FireworkEffectType> getFireworkEffectFor(final int level) {
         return Optional.ofNullable(this.levelUpFirework);
     }
 }

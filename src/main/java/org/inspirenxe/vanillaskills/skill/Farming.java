@@ -49,8 +49,8 @@ import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.x
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
 import static org.inspirenxe.skills.api.skill.builtin.block.TraitValue.trait;
 import static org.inspirenxe.skills.api.skill.builtin.filter.MatchFilterResponseToResponseFilter.matchTo;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.apply;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerEntry.apply;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerFilter.triggerIf;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.blocks;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.states;
 import static org.inspirenxe.skills.api.skill.builtin.filter.data.ValueFilters.value;

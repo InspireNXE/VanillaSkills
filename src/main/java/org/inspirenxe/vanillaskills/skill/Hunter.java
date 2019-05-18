@@ -27,14 +27,22 @@ package org.inspirenxe.vanillaskills.skill;
 import static net.kyori.filter.FilterResponse.DENY;
 import static net.kyori.filter.Filters.not;
 import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.DESTRUCT_ENTITY_DEATH;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_BLOCK_SECONDARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_PRIMARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_PRIMARY_OFF_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_MAIN_HAND;
+import static org.inspirenxe.skills.api.skill.builtin.EventProcessors.INTERACT_ITEM_SECONDARY_OFF_HAND;
 import static org.inspirenxe.skills.api.skill.builtin.FilterRegistrar.registrar;
 import static org.inspirenxe.skills.api.skill.builtin.RegistrarTypes.CANCEL_EVENT;
 import static org.inspirenxe.skills.api.skill.builtin.SkillsEventContextKeys.PROCESSING_PLAYER;
 import static org.inspirenxe.skills.api.skill.builtin.TriggerRegistrarTypes.ENTITY;
 import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.xp;
 import static org.inspirenxe.skills.api.skill.builtin.filter.MatchFilterResponseToResponseFilter.matchTo;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.apply;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerEntry.apply;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerFilter.triggerIf;
 import static org.inspirenxe.skills.api.skill.builtin.filter.data.ValueFilters.value;
 import static org.inspirenxe.skills.api.skill.builtin.filter.entity.EntityFilters.entities;
 import static org.inspirenxe.skills.api.skill.builtin.filter.item.ItemFilters.items;
@@ -57,6 +65,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public final class Hunter extends BasicSkillType {
 
@@ -84,19 +93,41 @@ public final class Hunter extends BasicSkillType {
                     matchTo(DENY, not(items(ItemTypes.GOLDEN_SWORD)), level(40)),
                     matchTo(DENY, not(items(ItemTypes.DIAMOND_SWORD)), level(50))
                 )
+                .build(),
+                INTERACT_BLOCK_PRIMARY_MAIN_HAND,
+                INTERACT_BLOCK_PRIMARY_OFF_HAND,
+                INTERACT_BLOCK_SECONDARY_MAIN_HAND,
+                INTERACT_BLOCK_SECONDARY_OFF_HAND,
+                INTERACT_ITEM_PRIMARY_MAIN_HAND,
+                INTERACT_ITEM_PRIMARY_OFF_HAND,
+                INTERACT_ITEM_SECONDARY_MAIN_HAND,
+                INTERACT_ITEM_SECONDARY_OFF_HAND
+            )
+            .register(container,
+                registrar()
                 .addTrigger(
                     ENTITY,
                     triggerIf()
                     .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)))
                     .then(
-                        apply(xp(50)).when(entities(EntityTypes.ZOMBIE)),
-                        apply(xp(75)).when(entities(EntityTypes.SKELETON)),
-                        apply(xp(100)).when(entities(EntityTypes.CREEPER))
+                        apply(xp(20)).when(entities(EntityTypes.ZOMBIE)),
+                        apply(xp(30)).when(entities(EntityTypes.SPIDER)),
+                        apply(xp(40)).when(entities(EntityTypes.SKELETON)),
+                        apply(xp(50)).when(entities(EntityTypes.CREEPER)),
+                        apply(xp(60)).when(entities(EntityTypes.CAVE_SPIDER)),
+                        apply(xp(70)).when(entities(EntityTypes.WITCH)),
+                        apply(xp(80)).when(entities(EntityTypes.ENDERMAN))
+
                     )
                     .build()
                 )
                 .build(),
                 DESTRUCT_ENTITY_DEATH
             ));
+    }
+
+    @Override
+    public Optional<FireworkEffectType> getFireworkEffectFor(final int level) {
+        return Optional.ofNullable(this.levelUpFirework);
     }
 }

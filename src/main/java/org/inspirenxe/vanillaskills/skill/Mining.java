@@ -46,8 +46,8 @@ import static org.inspirenxe.skills.api.skill.builtin.applicator.XPApplicators.x
 import static org.inspirenxe.skills.api.skill.builtin.block.FuzzyBlockState.state;
 import static org.inspirenxe.skills.api.skill.builtin.block.TraitValue.trait;
 import static org.inspirenxe.skills.api.skill.builtin.filter.MatchFilterResponseToResponseFilter.matchTo;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.ApplicatorEntry.apply;
-import static org.inspirenxe.skills.api.skill.builtin.filter.applicator.TriggerFilter.triggerIf;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerEntry.apply;
+import static org.inspirenxe.skills.api.skill.builtin.filter.trigger.TriggerFilter.triggerIf;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockCreatorFilters.natural;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.blocks;
 import static org.inspirenxe.skills.api.skill.builtin.filter.block.BlockFilters.states;
@@ -169,22 +169,16 @@ public final class Mining extends BasicSkillType {
                         triggerIf()
                         .all(not(value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE)), blocks(), natural())
                         .then(
-                            apply(scaledMoney(es, ef, c, 0.9)).when(blocks(BlockTypes.NETHERRACK)),
-                            apply(scaledMoney(es, ef, c, 1)).when(blocks(BlockTypes.STONE)),
-                            apply(scaledMoney(es, ef, c, 1)).when(blocks(BlockTypes.END_STONE)),
-                            apply(scaledMoney(es, ef, c, 2)).when(blocks(BlockTypes.SANDSTONE)),
-                            apply(scaledMoney(es, ef, c, 3)).when(blocks(BlockTypes.COAL_ORE)),
-                            apply(scaledMoney(es, ef, c, 4)).when(blocks(BlockTypes.IRON_ORE)),
-                            apply(scaledMoney(es, ef, c, 4)).when(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "stonebrick")))),
-                            apply(scaledMoney(es, ef, c, 5)).when(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "mossy_stonebrick")))),
-                            apply(scaledMoney(es, ef, c, 5)).when(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick")))),
-                            apply(scaledMoney(es, ef, c, 5)).when(blocks(BlockTypes.LAPIS_ORE)),
-                            apply(scaledMoney(es, ef, c, 6)).when(blocks(BlockTypes.GOLD_ORE)),
-                            apply(scaledMoney(es, ef, c, 7)).when(blocks(BlockTypes.REDSTONE_ORE)),
-                            apply(scaledMoney(es, ef, c, 7)).when(blocks(BlockTypes.LIT_REDSTONE_ORE)),
-                            apply(scaledMoney(es, ef, c, 8)).when(blocks(BlockTypes.DIAMOND_ORE)),
-                            apply(scaledMoney(es, ef, c, 8)).when(blocks(BlockTypes.OBSIDIAN)),
-                            apply(scaledMoney(es, ef, c, 10)).when(blocks(BlockTypes.EMERALD_ORE))
+                            apply(scaledMoney(0.9, es, ef, c)).when(blocks(BlockTypes.NETHERRACK)),
+                            apply(scaledMoney(1, es, ef, c)).when(blocks(BlockTypes.STONE, BlockTypes.END_STONE)),
+                            apply(scaledMoney(2, es, ef, c)).when(blocks(BlockTypes.SANDSTONE)),
+                            apply(scaledMoney(3, es, ef, c)).when(blocks(BlockTypes.COAL_ORE)),
+                            apply(scaledMoney(4, es, ef, c)).when(blocks(BlockTypes.IRON_ORE), states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "stonebrick")))),
+                            apply(scaledMoney(5, es, ef, c)).when(states(state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "mossy_stonebrick")), state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick")), state(BlockTypes.STONEBRICK, trait(STONEBRICK_VARIANT, "cracked_stonebrick"))), blocks(BlockTypes.LAPIS_ORE)),
+                            apply(scaledMoney(6, es, ef, c)).when(blocks(BlockTypes.GOLD_ORE)),
+                            apply(scaledMoney(7, es, ef, c)).when(blocks(BlockTypes.REDSTONE_ORE, BlockTypes.LIT_REDSTONE_ORE)),
+                            apply(scaledMoney(8, es, ef, c)).when(blocks(BlockTypes.DIAMOND_ORE, BlockTypes.OBSIDIAN)),
+                            apply(scaledMoney(10, es, ef, c)).when(blocks(BlockTypes.EMERALD_ORE))
                         )
                         .build()
                     );
