@@ -101,10 +101,10 @@ public final class Woodcutting extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(items(ItemTypes.STONE_AXE)), level(20)),
-                            matchTo(DENY, not(items(ItemTypes.IRON_AXE)), level(30)),
-                            matchTo(DENY, not(items(ItemTypes.GOLDEN_AXE)), level(40)),
-                            matchTo(DENY, not(items(ItemTypes.DIAMOND_AXE)), level(50))
+                            matchTo(DENY, level(20), not(items(ItemTypes.STONE_AXE))),
+                            matchTo(DENY, level(30), not(items(ItemTypes.IRON_AXE))),
+                            matchTo(DENY, level(40), not(items(ItemTypes.GOLDEN_AXE))),
+                            matchTo(DENY, level(50), not(items(ItemTypes.DIAMOND_AXE)))
                         )
                     )
                 )
@@ -126,11 +126,11 @@ public final class Woodcutting extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "dark_oak")))), level(10)),
-                            matchTo(DENY, not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "spruce")))), level(20)),
-                            matchTo(DENY, not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "birch")))), level(30)),
-                            matchTo(DENY, not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "jungle")))), level(40)),
-                            matchTo(DENY, not(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "acacia")))), level(50))
+                            matchTo(DENY, level(10), not(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "dark_oak"))))),
+                            matchTo(DENY, level(20), not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "spruce"))))),
+                            matchTo(DENY, level(30), not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "birch"))))),
+                            matchTo(DENY, level(40), not(states(state(BlockTypes.LOG, trait(LOG_VARIANT, "jungle"))))),
+                            matchTo(DENY, level(50), not(states(state(BlockTypes.LOG2, trait(LOG2_VARIANT, "acacia")))))
                         )
                     )
                 )

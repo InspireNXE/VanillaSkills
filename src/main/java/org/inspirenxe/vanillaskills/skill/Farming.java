@@ -130,7 +130,7 @@ public final class Farming extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(blocks(BlockTypes.CARROTS)), level(10))
+                            matchTo(DENY, level(10), not(blocks(BlockTypes.CARROTS)))
                         )
                     )
                 )
