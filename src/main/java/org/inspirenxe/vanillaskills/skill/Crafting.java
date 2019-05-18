@@ -83,11 +83,11 @@ public final class Crafting extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(items(ItemTypes.TORCH)), level(5)),
-                            matchTo(DENY, not(items(ItemTypes.STONE_PICKAXE, ItemTypes.STONE_AXE, ItemTypes.STONE_HOE, ItemTypes.STONE_SHOVEL)), level(20)),
-                            matchTo(DENY, not(items(ItemTypes.IRON_PICKAXE, ItemTypes.IRON_AXE, ItemTypes.IRON_HOE, ItemTypes.IRON_SHOVEL)), level(30)),
-                            matchTo(DENY, not(items(ItemTypes.GOLDEN_PICKAXE, ItemTypes.GOLDEN_AXE, ItemTypes.GOLDEN_HOE, ItemTypes.GOLDEN_SHOVEL)), level(40)),
-                            matchTo(DENY, not(items(ItemTypes.DIAMOND_PICKAXE, ItemTypes.DIAMOND_AXE, ItemTypes.DIAMOND_HOE, ItemTypes.DIAMOND_SHOVEL)), level(50))
+                            matchTo(DENY, level(5), not(items(ItemTypes.TORCH))),
+                            matchTo(DENY, level(20), not(items(ItemTypes.STONE_PICKAXE, ItemTypes.STONE_AXE, ItemTypes.STONE_HOE, ItemTypes.STONE_SHOVEL))),
+                            matchTo(DENY, level(30), not(items(ItemTypes.IRON_PICKAXE, ItemTypes.IRON_AXE, ItemTypes.IRON_HOE, ItemTypes.IRON_SHOVEL))),
+                            matchTo(DENY, level(40), not(items(ItemTypes.GOLDEN_PICKAXE, ItemTypes.GOLDEN_AXE, ItemTypes.GOLDEN_HOE, ItemTypes.GOLDEN_SHOVEL))),
+                            matchTo(DENY, level(50), not(items(ItemTypes.DIAMOND_PICKAXE, ItemTypes.DIAMOND_AXE, ItemTypes.DIAMOND_HOE, ItemTypes.DIAMOND_SHOVEL)))
                         )
                     )
                 )

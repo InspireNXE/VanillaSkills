@@ -103,10 +103,10 @@ public final class Mining extends BasicSkillType {
                             DENY,
                             value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                             any(
-                                matchTo(DENY, not(items(ItemTypes.STONE_PICKAXE)), level(20)),
-                                matchTo(DENY, not(items(ItemTypes.IRON_PICKAXE)), level(30)),
-                                matchTo(DENY, not(items(ItemTypes.GOLDEN_PICKAXE)), level(40)),
-                                matchTo(DENY, not(items(ItemTypes.DIAMOND_PICKAXE)), level(50))
+                                matchTo(DENY, level(20), not(items(ItemTypes.STONE_PICKAXE))),
+                                matchTo(DENY, level(30), not(items(ItemTypes.IRON_PICKAXE))),
+                                matchTo(DENY, level(40), not(items(ItemTypes.GOLDEN_PICKAXE))),
+                                matchTo(DENY, level(50), not(items(ItemTypes.DIAMOND_PICKAXE)))
                             )
                         )
                     )
@@ -129,16 +129,16 @@ public final class Mining extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(blocks(BlockTypes.COAL_ORE)), level(10)),
-                            matchTo(DENY, not(blocks(BlockTypes.IRON_ORE)), level(30)),
-                            matchTo(DENY, not(blocks(BlockTypes.LAPIS_ORE)), level(35)),
-                            matchTo(DENY, not(blocks(BlockTypes.GOLD_ORE)), level(40)),
-                            matchTo(DENY, not(blocks(BlockTypes.DIAMOND_ORE)), level(50)),
-                            matchTo(DENY, not(blocks(BlockTypes.OBSIDIAN)), level(60)),
-                            matchTo(DENY, not(blocks(BlockTypes.NETHERRACK)), level(65)),
-                            matchTo(DENY, not(blocks(BlockTypes.END_STONE)), level(85)),
-                            matchTo(DENY, not(blocks(BlockTypes.EMERALD_ORE)), level(95)),
-                            matchTo(DENY, not(blocks(BlockTypes.LIT_REDSTONE_ORE, BlockTypes.REDSTONE_ORE)), level(99))
+                            matchTo(DENY, level(10), not(blocks(BlockTypes.COAL_ORE))),
+                            matchTo(DENY, level(30), not(blocks(BlockTypes.IRON_ORE))),
+                            matchTo(DENY, level(35), not(blocks(BlockTypes.LAPIS_ORE))),
+                            matchTo(DENY, level(40), not(blocks(BlockTypes.GOLD_ORE))),
+                            matchTo(DENY, level(50), not(blocks(BlockTypes.DIAMOND_ORE))),
+                            matchTo(DENY, level(60), not(blocks(BlockTypes.OBSIDIAN))),
+                            matchTo(DENY, level(65), not(blocks(BlockTypes.NETHERRACK))),
+                            matchTo(DENY, level(85), not(blocks(BlockTypes.END_STONE))),
+                            matchTo(DENY, level(95), not(blocks(BlockTypes.EMERALD_ORE))),
+                            matchTo(DENY, level(99), not(blocks(BlockTypes.LIT_REDSTONE_ORE, BlockTypes.REDSTONE_ORE)))
                         )
                     )
                 )

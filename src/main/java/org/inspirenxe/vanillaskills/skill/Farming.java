@@ -104,10 +104,10 @@ public final class Farming extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(items(ItemTypes.STONE_HOE)), level(20)),
-                            matchTo(DENY, not(items(ItemTypes.IRON_HOE)), level(30)),
-                            matchTo(DENY, not(items(ItemTypes.GOLDEN_HOE)), level(40)),
-                            matchTo(DENY, not(items(ItemTypes.DIAMOND_HOE)), level(50))
+                            matchTo(DENY, level(20), not(items(ItemTypes.STONE_HOE))),
+                            matchTo(DENY, level(30), not(items(ItemTypes.IRON_HOE))),
+                            matchTo(DENY, level(40), not(items(ItemTypes.GOLDEN_HOE))),
+                            matchTo(DENY, level(50), not(items(ItemTypes.DIAMOND_HOE)))
                         )
                     )
                 )
@@ -169,7 +169,7 @@ public final class Farming extends BasicSkillType {
                         DENY,
                         value(PROCESSING_PLAYER, Keys.GAME_MODE, GameModes.CREATIVE),
                         any(
-                            matchTo(DENY, not(states(state(BlockTypes.CARROTS, trait(IntegerTraits.CARROTS_AGE, 7)))), level(10))
+                            matchTo(DENY, level(10), not(states(state(BlockTypes.CARROTS, trait(IntegerTraits.CARROTS_AGE, 7)))))
                         )
                     )
                 )

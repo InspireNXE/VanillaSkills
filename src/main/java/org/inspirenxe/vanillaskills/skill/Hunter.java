@@ -88,10 +88,10 @@ public final class Hunter extends BasicSkillType {
                 registrar()
                 .addFilter(
                     CANCEL_EVENT,
-                    matchTo(DENY, not(items(ItemTypes.STONE_SWORD)), level(20)),
-                    matchTo(DENY, not(items(ItemTypes.IRON_SWORD)), level(30)),
-                    matchTo(DENY, not(items(ItemTypes.GOLDEN_SWORD)), level(40)),
-                    matchTo(DENY, not(items(ItemTypes.DIAMOND_SWORD)), level(50))
+                    matchTo(DENY, level(20), not(items(ItemTypes.STONE_SWORD))),
+                    matchTo(DENY, level(30), not(items(ItemTypes.IRON_SWORD))),
+                    matchTo(DENY, level(40), not(items(ItemTypes.GOLDEN_SWORD))),
+                    matchTo(DENY, level(50), not(items(ItemTypes.DIAMOND_SWORD)))
                 )
                 .build(),
                 INTERACT_BLOCK_PRIMARY_MAIN_HAND,
